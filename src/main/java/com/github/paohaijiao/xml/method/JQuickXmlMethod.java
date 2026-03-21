@@ -15,6 +15,8 @@
  */
 package com.github.paohaijiao.xml.method;
 
+import lombok.Data;
+
 /**
  * packageName com.github.paohaijiao.xml
  *
@@ -22,35 +24,12 @@ package com.github.paohaijiao.xml.method;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class CurlMethod {
+@Data
+public class JQuickXmlMethod {
 
     private String name;
 
     private String returnClass;
 
-    private String curlCommand;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getReturnClass() {
-        return returnClass;
-    }
-
-    public void setReturnClass(String returnClass) {
-        this.returnClass = returnClass;
-    }
-
-    public String getCurlCommand() {
-        return curlCommand;
-    }
-
-    public void setCurlCommand(String curlCommand) {
-        this.curlCommand = curlCommand;
-    }
+    private String content;
 }

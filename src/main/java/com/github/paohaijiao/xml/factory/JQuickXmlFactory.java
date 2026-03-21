@@ -16,9 +16,9 @@
 package com.github.paohaijiao.xml.factory;
 
 import com.github.paohaijiao.exception.JAssert;
-import com.github.paohaijiao.xml.invocation.CurlInvocationHandler;
-import com.github.paohaijiao.xml.namespace.CurlNamespace;
-import com.github.paohaijiao.xml.parser.CurlXmlParser;
+import com.github.paohaijiao.xml.invocation.JQuickXmlHandler;
+import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
+import com.github.paohaijiao.xml.parser.JQuickXmlParser;
 
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -30,20 +30,20 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class CurlApiFactory {
+public class JQuickXmlFactory {
 
-    private final Map<String, CurlNamespace> namespaceMap;
+    private final Map<String, JQuickXmlNamespace> namespaceMap;
 
-    public CurlApiFactory(String xmlPath) {
-        CurlXmlParser parser = new CurlXmlParser();
+    public JQuickXmlFactory(String xmlPath) {
+        JQuickXmlParser parser = new JQuickXmlParser();
         this.namespaceMap = parser.parse(xmlPath);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T createApi(Class<T> apiInterface) {
         String interfaceName = apiInterface.getName();
-        CurlNamespace namespace = namespaceMap.get(interfaceName);
+        JQuickXmlNamespace namespace = namespaceMap.get(interfaceName);
         JAssert.notNull(namespace, "no curl configuration found for interface: " + interfaceName);
-        return (T) Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[]{apiInterface}, new CurlInvocationHandler(namespace));
+        return (T) Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[]{apiInterface}, new JQuickXmlHandler(namespace));
     }
 }

@@ -19,8 +19,8 @@ import com.github.paohaijiao.console.JConsole;
 import com.github.paohaijiao.exception.JAssert;
 import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.type.JTypeReference;
-import com.github.paohaijiao.xml.method.CurlMethod;
-import com.github.paohaijiao.xml.namespace.CurlNamespace;
+import com.github.paohaijiao.xml.method.JQuickXmlMethod;
+import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.param.Param;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,13 +40,13 @@ import java.util.Map;
  * @since 2025/11/27
  */
 @Slf4j
-public class CurlInvocationHandler implements InvocationHandler {
+public class JQuickXmlHandler implements InvocationHandler {
 
     private static JConsole console=new JConsole();
 
-    private final CurlNamespace namespace;
+    private final JQuickXmlNamespace namespace;
 
-    public CurlInvocationHandler(CurlNamespace namespace) {
+    public JQuickXmlHandler(JQuickXmlNamespace namespace) {
         this.namespace = namespace;
     }
 
@@ -56,7 +56,7 @@ public class CurlInvocationHandler implements InvocationHandler {
             return method.invoke(this, args);
         }
         String methodName = method.getName();
-        CurlMethod curlMethod = namespace.getMethods().get(methodName);
+        JQuickXmlMethod curlMethod = namespace.getMethods().get(methodName);
         JAssert.notNull(curlMethod,"No curl configuration found for method: " + methodName);
         Map<String, Object> paramMap = buildParamMap(method, args);
         JContext context = new JContext();
@@ -87,8 +87,8 @@ public class CurlInvocationHandler implements InvocationHandler {
         return paramMap;
     }
 
-    private Object executeCurl(CurlMethod curlMethod, JContext context,  Method method) {
-        String curlCommand = curlMethod.getCurlCommand();
+    private Object executeCurl(JQuickXmlMethod curlMethod, JContext context, Method method) {
+        String curlCommand = curlMethod.getContent();
         return null;
     }
 

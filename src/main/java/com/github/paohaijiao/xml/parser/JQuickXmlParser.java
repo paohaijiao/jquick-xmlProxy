@@ -15,8 +15,8 @@
  */
 package com.github.paohaijiao.xml.parser;
 
-import com.github.paohaijiao.xml.method.CurlMethod;
-import com.github.paohaijiao.xml.namespace.CurlNamespace;
+import com.github.paohaijiao.xml.method.JQuickXmlMethod;
+import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.resolver.ClasspathEntityResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -35,10 +35,10 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class CurlXmlParser {
+public class JQuickXmlParser {
 
-    public Map<String, CurlNamespace> parse(String xmlPath) {
-        Map<String, CurlNamespace> namespaceMap = new HashMap<>();
+    public Map<String, JQuickXmlNamespace> parse(String xmlPath) {
+        Map<String, JQuickXmlNamespace> namespaceMap = new HashMap<>();
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setValidating(true);
@@ -53,7 +53,7 @@ public class CurlXmlParser {
             NodeList curlsNodes = document.getElementsByTagName("curls");
             for (int i = 0; i < curlsNodes.getLength(); i++) {
                 Element curlsElement = (Element) curlsNodes.item(i);
-                CurlNamespace curlNamespace = parseCurlsElement(curlsElement);
+                JQuickXmlNamespace curlNamespace = parseCurlsElement(curlsElement);
                 namespaceMap.put(curlNamespace.getNamespace(), curlNamespace);
             }
         } catch (Exception e) {
@@ -62,24 +62,24 @@ public class CurlXmlParser {
         return namespaceMap;
     }
 
-    private CurlNamespace parseCurlsElement(Element curlsElement) {
-        CurlNamespace namespace = new CurlNamespace();
+    private JQuickXmlNamespace parseCurlsElement(Element curlsElement) {
+        JQuickXmlNamespace namespace = new JQuickXmlNamespace();
         String namespaceName = curlsElement.getAttribute("namespace");
         namespace.setNamespace(namespaceName);
         NodeList curlNodes = curlsElement.getElementsByTagName("curl");
         for (int i = 0; i < curlNodes.getLength(); i++) {
             Element curlElement = (Element) curlNodes.item(i);
-            CurlMethod method = parseCurlElement(curlElement);
+            JQuickXmlMethod method = parseCurlElement(curlElement);
             namespace.addMethod(method.getName(), method);
         }
         return namespace;
     }
 
-    private CurlMethod parseCurlElement(Element curlElement) {
-        CurlMethod method = new CurlMethod();
+    private JQuickXmlMethod parseCurlElement(Element curlElement) {
+        JQuickXmlMethod method = new JQuickXmlMethod();
         method.setName(curlElement.getAttribute("name"));
         method.setReturnClass(curlElement.getAttribute("returnClass"));
-        method.setCurlCommand(curlElement.getTextContent().trim());
+        method.setContent(curlElement.getTextContent().trim());
         return method;
     }
 }

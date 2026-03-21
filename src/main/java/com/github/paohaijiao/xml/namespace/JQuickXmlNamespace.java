@@ -15,7 +15,7 @@
  */
 package com.github.paohaijiao.xml.namespace;
 
-import com.github.paohaijiao.xml.method.CurlMethod;
+import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +27,11 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class CurlNamespace {
+public class JQuickXmlNamespace {
 
     private String namespace;
 
-    private final Map<String, CurlMethod> methods = new HashMap<>();
+    private final Map<String, JQuickXmlMethod> methods = new HashMap<>();
 
     public String getNamespace() {
         return namespace;
@@ -41,11 +41,11 @@ public class CurlNamespace {
         this.namespace = namespace;
     }
 
-    public Map<String, CurlMethod> getMethods() {
+    public Map<String, JQuickXmlMethod> getMethods() {
         return methods;
     }
 
-    public void addMethod(String name, CurlMethod method) {
+    public void addMethod(String name, JQuickXmlMethod method) {
         methods.put(name, method);
     }
 }

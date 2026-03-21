@@ -14,7 +14,7 @@
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
 
-import com.github.paohaijiao.xml.proxry.XmlMapperProxy;
+import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
 import com.paohaijiao.UserApi;
 
 import java.io.InputStream;
@@ -25,17 +25,8 @@ import java.util.Map;
 public class XmlParserExample {
 
     public static void main(String[] args) throws Exception {
-        InputStream xmlStream = XmlParserExample.class.getResourceAsStream("apis.xml");
-        UserApi userApi = XmlMapperProxy.getMapper(UserApi.class, xmlStream);
-        List<Map<String, Object>> allUsers = userApi.all();
-        System.out.println("All users: " + allUsers);
-        Map<String, Object> user = userApi.findByName("张三");
-        System.out.println("User: " + user);
-
-        // 参数化查询
-        Map<String, Object> params = new HashMap<>();
-        params.put("status", "active");
-        List<Map<String, Object>> activeUsers = userApi.search(params);
-        System.out.println("Active users: " + activeUsers);
+        JQuickXmlFactory factory = new JQuickXmlFactory("apis.xml");
+        UserApi userApi = factory.createApi(UserApi.class);
+        System.out.println(userApi);
     }
 }

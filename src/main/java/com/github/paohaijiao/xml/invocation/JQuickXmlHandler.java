@@ -39,7 +39,7 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-@Slf4j
+
 public class JQuickXmlHandler implements InvocationHandler {
 
     private static JConsole console=new JConsole();

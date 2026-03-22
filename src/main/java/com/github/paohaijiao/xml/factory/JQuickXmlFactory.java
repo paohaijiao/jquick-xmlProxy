@@ -14,14 +14,7 @@
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
 package com.github.paohaijiao.xml.factory;
-
-import com.github.paohaijiao.exception.JAssert;
-import com.github.paohaijiao.xml.invocation.JQuickXmlHandler;
-import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
-import com.github.paohaijiao.xml.parser.JQuickXmlParser;
-
-import java.lang.reflect.Proxy;
-import java.util.Map;
+import com.github.paohaijiao.xml.parser.JQuickParser;
 
 /**
  * packageName com.github.paohaijiao.xml.factory
@@ -30,20 +23,12 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class JQuickXmlFactory {
+public class JQuickXmlFactory extends JQuickAbsFactory implements JQuickFactory {
 
-    private final Map<String, JQuickXmlNamespace> namespaceMap;
-
-    public JQuickXmlFactory(String xmlPath) {
-        JQuickXmlParser parser = new JQuickXmlParser();
+    public JQuickXmlFactory(JQuickParser paser,String xmlPath) {
+        this.parser = paser;
         this.namespaceMap = parser.parse(xmlPath);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T createApi(Class<T> apiInterface) {
-        String interfaceName = apiInterface.getName();
-        JQuickXmlNamespace namespace = namespaceMap.get(interfaceName);
-        JAssert.notNull(namespace, "no curl configuration found for interface: " + interfaceName);
-        return (T) Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[]{apiInterface}, new JQuickXmlHandler(namespace));
-    }
+
 }

@@ -35,7 +35,7 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class JQuickXmlParser {
+public class JQuickXmlParser implements JQuickParser{
 
     public Map<String, JQuickXmlNamespace> parse(String xmlPath) {
         Map<String, JQuickXmlNamespace> namespaceMap = new HashMap<>();
@@ -52,8 +52,8 @@ public class JQuickXmlParser {
             Document document = builder.parse(inputStream);
             NodeList curlsNodes = document.getElementsByTagName("curls");
             for (int i = 0; i < curlsNodes.getLength(); i++) {
-                Element curlsElement = (Element) curlsNodes.item(i);
-                JQuickXmlNamespace curlNamespace = parseCurlsElement(curlsElement);
+                Element element = (Element) curlsNodes.item(i);
+                JQuickXmlNamespace curlNamespace = parseElement(element);
                 namespaceMap.put(curlNamespace.getNamespace(), curlNamespace);
             }
         } catch (Exception e) {
@@ -62,11 +62,11 @@ public class JQuickXmlParser {
         return namespaceMap;
     }
 
-    private JQuickXmlNamespace parseCurlsElement(Element curlsElement) {
+    private JQuickXmlNamespace parseElement(Element element) {
         JQuickXmlNamespace namespace = new JQuickXmlNamespace();
-        String namespaceName = curlsElement.getAttribute("namespace");
+        String namespaceName = element.getAttribute("namespace");
         namespace.setNamespace(namespaceName);
-        NodeList curlNodes = curlsElement.getElementsByTagName("curl");
+        NodeList curlNodes = element.getElementsByTagName("curl");
         for (int i = 0; i < curlNodes.getLength(); i++) {
             Element curlElement = (Element) curlNodes.item(i);
             JQuickXmlMethod method = parseCurlElement(curlElement);

@@ -14,19 +14,19 @@
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
 
+import com.github.paohaijiao.xml.factory.JQuickFactory;
 import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
+import com.github.paohaijiao.xml.parser.JQuickParser;
+import com.github.paohaijiao.xml.parser.JQuickXmlParser;
 import com.paohaijiao.UserApi;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class XmlParserExample {
 
     public static void main(String[] args) throws Exception {
-        JQuickXmlFactory factory = new JQuickXmlFactory("apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi);
+        JQuickFactory factory = new JQuickXmlFactory(new JQuickXmlParser(),"apis.xml");
+        System.out.println(factory);
+//        UserApi userApi = factory.createApi(UserApi.class);
+//        System.out.println(userApi);
     }
 }

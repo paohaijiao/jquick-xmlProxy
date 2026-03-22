@@ -22,7 +22,6 @@ import com.github.paohaijiao.type.JTypeReference;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.param.Param;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -56,12 +55,12 @@ public class JQuickXmlHandler implements InvocationHandler {
             return method.invoke(this, args);
         }
         String methodName = method.getName();
-        JQuickXmlMethod curlMethod = namespace.getMethods().get(methodName);
-        JAssert.notNull(curlMethod,"No curl configuration found for method: " + methodName);
+        JQuickXmlMethod xmlMethod = namespace.getMethods().get(methodName);
+        JAssert.notNull(xmlMethod,"No xmlMethod configuration found for method: " + methodName);
         Map<String, Object> paramMap = buildParamMap(method, args);
         JContext context = new JContext();
         context.putAll(paramMap);
-        return executeCurl(curlMethod, context, method);
+        return execute(xmlMethod, context, method);
     }
 
     private Map<String, Object> buildParamMap(Method method, Object[] args) {
@@ -87,8 +86,8 @@ public class JQuickXmlHandler implements InvocationHandler {
         return paramMap;
     }
 
-    private Object executeCurl(JQuickXmlMethod curlMethod, JContext context, Method method) {
-        String curlCommand = curlMethod.getContent();
+    private Object execute(JQuickXmlMethod curlMethod, JContext context, Method method) {
+        String content = curlMethod.getContent();
         return null;
     }
 

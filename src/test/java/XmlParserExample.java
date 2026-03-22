@@ -16,15 +16,15 @@
 
 import com.github.paohaijiao.xml.factory.JQuickFactory;
 import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
-import com.github.paohaijiao.xml.parser.JQuickParser;
-import com.github.paohaijiao.xml.parser.JQuickXmlParser;
-import com.paohaijiao.UserApi;
+import com.github.paohaijiao.xml.handler.JQuickCurlXmlParseHandler;
+import com.github.paohaijiao.xml.handler.JQuickParseHandler;
 
 
 public class XmlParserExample {
 
     public static void main(String[] args) throws Exception {
-        JQuickFactory factory = new JQuickXmlFactory(new JQuickXmlParser(),"apis.xml");
+        JQuickParseHandler handler=new JQuickCurlXmlParseHandler();
+        JQuickFactory factory = new JQuickXmlFactory(handler,"apis.xml");
         System.out.println(factory);
 //        UserApi userApi = factory.createApi(UserApi.class);
 //        System.out.println(userApi);

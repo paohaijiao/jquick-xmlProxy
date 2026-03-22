@@ -31,5 +31,10 @@ public class JQuickXmlMethod {
 
     private String returnClass;
 
+    private String paramClass;
+
+    private String value;
+
     private String content;
+
 }

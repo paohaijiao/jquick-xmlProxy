@@ -13,22 +13,28 @@
  *
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
-package com.github.paohaijiao.xml.factory;
-import com.github.paohaijiao.xml.handler.JQuickParseHandler;
+package com.github.paohaijiao.xml.handler;
+
+import com.github.paohaijiao.xml.element.JQuickCurlXmlElement;
+import com.github.paohaijiao.xml.element.JQuickXmlElement;
+import com.github.paohaijiao.xml.parser.JQuickCurlXmlParser;
 
 /**
- * packageName com.github.paohaijiao.xml.factory
+ * packageName com.github.paohaijiao.xml.handler
  *
  * @author Martin
  * @version 1.0.0
- * @since 2025/11/27
+ * @since 2026/3/22
  */
-public class JQuickXmlFactory extends JQuickAbsFactory implements JQuickFactory {
+public class JQuickCurlXmlParseHandler implements JQuickParseHandler{
 
-    public JQuickXmlFactory(JQuickParseHandler hanler, String xmlPath) {
-        this.parser = hanler.getJQuickXmlParser(hanler.getJQuickXmlElement());
-        this.namespaceMap = parser.parse(xmlPath);
+    @Override
+    public JQuickXmlElement getJQuickXmlElement() {
+        return new JQuickCurlXmlElement();
     }
 
-
+    @Override
+    public JQuickCurlXmlParser getJQuickXmlParser(JQuickXmlElement element) {
+        return new JQuickCurlXmlParser(element);
+    }
 }

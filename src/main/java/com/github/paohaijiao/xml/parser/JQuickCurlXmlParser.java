@@ -15,7 +15,9 @@
  */
 package com.github.paohaijiao.xml.parser;
 
+import com.github.paohaijiao.exception.JAssert;
 import com.github.paohaijiao.xml.builder.JQuickXmlBuilder;
+import com.github.paohaijiao.xml.element.JQuickXmlElement;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.resolver.ClasspathEntityResolver;
@@ -36,9 +38,16 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class JQuickXmlParser implements JQuickParser{
+public class JQuickCurlXmlParser implements JQuickParser{
 
-    private final String namespaceTag = "namespace";
+
+
+    private JQuickXmlElement jQuickXmlElement;
+
+    public JQuickCurlXmlParser(JQuickXmlElement jQuickXmlElement){
+        JAssert.notNull(jQuickXmlElement,"jQuickXmlElement must not be null");
+        this.jQuickXmlElement=jQuickXmlElement;
+    }
 
     public Map<String, JQuickXmlNamespace> parse(String xmlPath) {
         Map<String, JQuickXmlNamespace> namespaceMap = new HashMap<>();
@@ -53,7 +62,7 @@ public class JQuickXmlParser implements JQuickParser{
                 throw new IllegalArgumentException("Resource not found in classpath: " + xmlPath);
             }
             Document document = builder.parse(inputStream);
-            NodeList curlsNodes = document.getElementsByTagName("curls");
+            NodeList curlsNodes = document.getElementsByTagName(jQuickXmlElement.getRootElementTagName());
             for (int i = 0; i < curlsNodes.getLength(); i++) {
                 Element element = (Element) curlsNodes.item(i);
                 JQuickXmlNamespace curlNamespace = parseElement(element);
@@ -66,14 +75,9 @@ public class JQuickXmlParser implements JQuickParser{
     }
 
     private JQuickXmlNamespace parseElement(Element element) {
-        String namespaceName = element.getAttribute(namespaceTag);
-        JQuickXmlNamespace namespace = JQuickXmlBuilder.create()
-                .namespace(namespaceName)
-                .addMethod("sayHello", "java.lang.String", "return \"Hello World\";")
-                .addMethod("getUser", "com.example.User", "return new User();")
-                .build();
-
-        NodeList curlNodes = element.getElementsByTagName("curl");
+        String namespaceName = element.getAttribute(jQuickXmlElement.getNameSpaceName());
+        JQuickXmlNamespace namespace = JQuickXmlBuilder.create().namespace(namespaceName).build();
+        NodeList curlNodes = element.getElementsByTagName(jQuickXmlElement.getChildElementTagName());
         for (int i = 0; i < curlNodes.getLength(); i++) {
             Element curlElement = (Element) curlNodes.item(i);
             JQuickXmlMethod method = parseCurlElement(curlElement);
@@ -84,9 +88,11 @@ public class JQuickXmlParser implements JQuickParser{
 
     private JQuickXmlMethod parseCurlElement(Element curlElement) {
         JQuickXmlMethod method = new JQuickXmlMethod();
-        method.setName(curlElement.getAttribute("name"));
-        method.setReturnClass(curlElement.getAttribute("returnClass"));
+        method.setName(curlElement.getAttribute(jQuickXmlElement.getMethodName()));
+        method.setReturnClass(curlElement.getAttribute(jQuickXmlElement.getMethodReturnClass()));
+        method.setParamClass(curlElement.getAttribute(jQuickXmlElement.getMethodParamClass()));
         method.setContent(curlElement.getTextContent().trim());
+        method.setValue(curlElement.getAttribute(jQuickXmlElement.getValue()));
         return method;
     }
 }

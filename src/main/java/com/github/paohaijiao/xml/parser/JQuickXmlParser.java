@@ -15,6 +15,7 @@
  */
 package com.github.paohaijiao.xml.parser;
 
+import com.github.paohaijiao.xml.builder.JQuickXmlBuilder;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.resolver.ClasspathEntityResolver;
@@ -36,6 +37,8 @@ import java.util.Map;
  * @since 2025/11/27
  */
 public class JQuickXmlParser implements JQuickParser{
+
+    private final String namespaceTag = "namespace";
 
     public Map<String, JQuickXmlNamespace> parse(String xmlPath) {
         Map<String, JQuickXmlNamespace> namespaceMap = new HashMap<>();
@@ -63,9 +66,13 @@ public class JQuickXmlParser implements JQuickParser{
     }
 
     private JQuickXmlNamespace parseElement(Element element) {
-        JQuickXmlNamespace namespace = new JQuickXmlNamespace();
-        String namespaceName = element.getAttribute("namespace");
-        namespace.setNamespace(namespaceName);
+        String namespaceName = element.getAttribute(namespaceTag);
+        JQuickXmlNamespace namespace = JQuickXmlBuilder.create()
+                .namespace(namespaceName)
+                .addMethod("sayHello", "java.lang.String", "return \"Hello World\";")
+                .addMethod("getUser", "com.example.User", "return new User();")
+                .build();
+
         NodeList curlNodes = element.getElementsByTagName("curl");
         for (int i = 0; i < curlNodes.getLength(); i++) {
             Element curlElement = (Element) curlNodes.item(i);

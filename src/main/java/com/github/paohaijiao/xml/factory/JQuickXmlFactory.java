@@ -15,6 +15,7 @@
  */
 package com.github.paohaijiao.xml.factory;
 import com.github.paohaijiao.xml.handler.JQuickParseHandler;
+import com.github.paohaijiao.xml.parser.JQuickXmlParser;
 
 /**
  * packageName com.github.paohaijiao.xml.factory
@@ -26,7 +27,7 @@ import com.github.paohaijiao.xml.handler.JQuickParseHandler;
 public class JQuickXmlFactory extends JQuickAbsFactory implements JQuickFactory {
 
     public JQuickXmlFactory(JQuickParseHandler hanler, String xmlPath) {
-        this.parser = hanler.getJQuickXmlParser(hanler.getJQuickXmlElement());
+        JQuickXmlParser parser = new JQuickXmlParser(hanler.createJQuickXmlElement());
         this.namespaceMap = parser.parse(xmlPath);
     }
 

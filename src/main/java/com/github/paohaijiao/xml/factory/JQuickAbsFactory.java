@@ -16,9 +16,8 @@
 package com.github.paohaijiao.xml.factory;
 
 import com.github.paohaijiao.exception.JAssert;
-import com.github.paohaijiao.xml.invocation.JQuickXmlHandler;
+import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
-import com.github.paohaijiao.xml.parser.JQuickParser;
 
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -34,13 +33,14 @@ public class JQuickAbsFactory {
 
     protected  Map<String, JQuickXmlNamespace> namespaceMap;
 
-    protected JQuickParser parser;
+
+    protected JQuickXmlInvocationHandler invocationHandler;
 
     @SuppressWarnings("unchecked")
     public <T> T createApi(Class<T> apiInterface) {
         String interfaceName = apiInterface.getName();
         JQuickXmlNamespace namespace = namespaceMap.get(interfaceName);
-        JAssert.notNull(namespace, "no curl configuration found for interface: " + interfaceName);
-        return (T) Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[]{apiInterface}, new JQuickXmlHandler(namespace));
+        JAssert.notNull(namespace, "No  configuration found for interface: " + interfaceName);
+        return (T) Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[]{apiInterface}, invocationHandler);
     }
 }

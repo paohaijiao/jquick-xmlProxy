@@ -38,13 +38,13 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-public class JQuickCurlXmlParser implements JQuickParser{
+public class JQuickXmlParser implements JQuickParser{
 
 
 
     private JQuickXmlElement jQuickXmlElement;
 
-    public JQuickCurlXmlParser(JQuickXmlElement jQuickXmlElement){
+    public JQuickXmlParser(JQuickXmlElement jQuickXmlElement){
         JAssert.notNull(jQuickXmlElement,"jQuickXmlElement must not be null");
         this.jQuickXmlElement=jQuickXmlElement;
     }
@@ -80,13 +80,13 @@ public class JQuickCurlXmlParser implements JQuickParser{
         NodeList curlNodes = element.getElementsByTagName(jQuickXmlElement.getChildElementTagName());
         for (int i = 0; i < curlNodes.getLength(); i++) {
             Element curlElement = (Element) curlNodes.item(i);
-            JQuickXmlMethod method = parseCurlElement(curlElement);
+            JQuickXmlMethod method = parseMethodElement(curlElement);
             namespace.addMethod(method.getName(), method);
         }
         return namespace;
     }
 
-    private JQuickXmlMethod parseCurlElement(Element curlElement) {
+    private JQuickXmlMethod parseMethodElement(Element curlElement) {
         JQuickXmlMethod method = new JQuickXmlMethod();
         method.setName(curlElement.getAttribute(jQuickXmlElement.getMethodName()));
         method.setReturnClass(curlElement.getAttribute(jQuickXmlElement.getMethodReturnClass()));

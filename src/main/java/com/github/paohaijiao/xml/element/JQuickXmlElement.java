@@ -4,19 +4,19 @@ public interface JQuickXmlElement {
     /**
      * 获取元素名称
      */
-    String getNameSpaceName();
+    public String getNameSpaceName();
 
-    String getRootElementTagName();
+    public String getRootElementTagName();
 
-    String getChildElementTagName();
+    public String getChildElementTagName();
 
-    String getMethodName();
+    public String getMethodName();
 
-    String getMethodReturnClass();
+    public String getMethodReturnClass();
 
-    String getMethodParamClass();
+    public String getMethodParamClass();
     /**
      * 获取元素值
      */
-    String getValue();
+    public String getValue();
 }

@@ -18,6 +18,10 @@ import com.github.paohaijiao.xml.factory.JQuickFactory;
 import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
 import com.github.paohaijiao.xml.handler.JQuickCurlXmlParseHandler;
 import com.github.paohaijiao.xml.handler.JQuickParseHandler;
+import com.paohaijiao.UserApi;
+
+import java.util.List;
+import java.util.Map;
 
 
 public class XmlParserExample {
@@ -26,7 +30,9 @@ public class XmlParserExample {
         JQuickParseHandler handler=new JQuickCurlXmlParseHandler();
         JQuickFactory factory = new JQuickXmlFactory(handler,"apis.xml");
         System.out.println(factory);
-//        UserApi userApi = factory.createApi(UserApi.class);
-//        System.out.println(userApi);
+        UserApi userApi = factory.createApi(UserApi.class);
+        System.out.println(userApi);
+        List<Map<String, Object>> list= userApi.all();
+        System.out.println(list);
     }
 }

@@ -16,13 +16,18 @@
 package com.github.paohaijiao.xml.invocation;
 
 import com.github.paohaijiao.console.JConsole;
+import com.github.paohaijiao.enums.JLogLevel;
 import com.github.paohaijiao.exception.JAssert;
 import com.github.paohaijiao.param.JContext;
+import com.github.paohaijiao.result.JResult;
+import com.github.paohaijiao.result.factory.JResultFactory;
 import com.github.paohaijiao.type.JTypeReference;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.param.Param;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -30,6 +35,8 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * packageName com.github.paohaijiao.xml.invocation
@@ -38,16 +45,14 @@ import java.util.Map;
  * @version 1.0.0
  * @since 2025/11/27
  */
-
-public class JQuickXmlHandler implements InvocationHandler {
+@Slf4j
+public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
 
     private static JConsole console=new JConsole();
 
-    private final JQuickXmlNamespace namespace;
+    protected  JQuickXmlNamespace namespace;
 
-    public JQuickXmlHandler(JQuickXmlNamespace namespace) {
-        this.namespace = namespace;
-    }
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -55,8 +60,9 @@ public class JQuickXmlHandler implements InvocationHandler {
             return method.invoke(this, args);
         }
         String methodName = method.getName();
+        JAssert.notNull(namespace,"No NameSpace Configuration Found For Xml ");
         JQuickXmlMethod xmlMethod = namespace.getMethods().get(methodName);
-        JAssert.notNull(xmlMethod,"No xmlMethod configuration found for method: " + methodName);
+        JAssert.notNull(xmlMethod,"No XmlMethod Configuration Found For Method: " + methodName);
         Map<String, Object> paramMap = buildParamMap(method, args);
         JContext context = new JContext();
         context.putAll(paramMap);
@@ -82,21 +88,52 @@ public class JQuickXmlHandler implements InvocationHandler {
                 paramMap.put(parameters[i].getName(), argValue);
             }
         }
-
         return paramMap;
     }
+    protected abstract JResult loadResult(String rawResult, JContext context);
 
-    private Object execute(JQuickXmlMethod curlMethod, JContext context, Method method) {
+    protected  Object execute(JQuickXmlMethod curlMethod, JContext context, Method method) throws IOException {
         String content = curlMethod.getContent();
-        return null;
+        String contentLexer=replaceVariables(content,context);
+        console.log(JLogLevel.INFO,"Merged Lexer command:"+ contentLexer);
+        JResult rawResult = loadResult(contentLexer,context);
+        log.info("result:{}",rawResult);
+        Class<?> returnType = method.getReturnType();
+        Type genericReturnType = method.getGenericReturnType();
+        if (returnType.equals(Void.TYPE) || returnType.equals(java.lang.Void.class)) {
+            return null;
+        }
+        JTypeReference<?> typeReference = createTypeReference(genericReturnType);
+        return JResultFactory.createResult(rawResult, typeReference);
     }
 
-    private JTypeReference<?> createTypeReference(Type genericType) {
+    protected JTypeReference<?> createTypeReference(Type genericType) {
         return new JTypeReference<Object>() {
             @Override
             public Type getType() {
                 return genericType;
             }
         };
+    }
+    protected String replaceVariables(String command, JContext context) {
+        if (command == null || command.isEmpty()) {
+            return command;
+        }
+        Pattern pattern = Pattern.compile("#\\{([^}]+)\\}");
+        Matcher matcher = pattern.matcher(command);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String variableName = matcher.group(1);
+            Object value = context.get(variableName);
+            if (value != null) {
+                String replacement = Matcher.quoteReplacement(value.toString());
+                matcher.appendReplacement(sb,replacement);
+            } else {
+                log.info("Variable #{} not found in context, keeping placeholder", variableName);
+                matcher.appendReplacement(sb, matcher.group(0)); // 保持原样
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 }

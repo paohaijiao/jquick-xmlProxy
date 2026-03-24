@@ -15,9 +15,11 @@
  */
 package com.github.paohaijiao.xml.handler;
 
+import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.xml.element.JQuickCurlXmlElement;
 import com.github.paohaijiao.xml.element.JQuickXmlElement;
-import com.github.paohaijiao.xml.parser.JQuickCurlXmlParser;
+import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
+import com.github.paohaijiao.xml.parser.JQuickXmlParser;
 
 /**
  * packageName com.github.paohaijiao.xml.handler
@@ -29,12 +31,12 @@ import com.github.paohaijiao.xml.parser.JQuickCurlXmlParser;
 public class JQuickCurlXmlParseHandler implements JQuickParseHandler{
 
     @Override
-    public JQuickXmlElement getJQuickXmlElement() {
+    public JQuickXmlElement createJQuickXmlElement() {
         return new JQuickCurlXmlElement();
     }
 
     @Override
-    public JQuickCurlXmlParser getJQuickXmlParser(JQuickXmlElement element) {
-        return new JQuickCurlXmlParser(element);
+    public JQuickXmlInvocationHandler createlInvocationHandler(JContext context){
+        return new JQuickXmlInvocationHandler(createJQuickXmlElement());
     }
 }

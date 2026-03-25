@@ -16,6 +16,7 @@
 package com.github.paohaijiao.xml.factory;
 
 import com.github.paohaijiao.exception.JAssert;
+import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 
@@ -35,6 +36,8 @@ public class JQuickAbsFactory {
 
 
     protected JQuickXmlInvocationHandler invocationHandler;
+
+    protected JContext context;
 
     @SuppressWarnings("unchecked")
     public <T> T createApi(Class<T> apiInterface) {

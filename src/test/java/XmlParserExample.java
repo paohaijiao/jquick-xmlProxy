@@ -16,7 +16,7 @@
 
 import com.github.paohaijiao.xml.factory.JQuickFactory;
 import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
-import com.github.paohaijiao.xml.handler.JQuickCurlXmlParseHandler;
+import com.paohaijiao.elements.JQuickCurlXmlParseHandler;
 import com.github.paohaijiao.xml.handler.JQuickParseHandler;
 import com.paohaijiao.UserApi;
 

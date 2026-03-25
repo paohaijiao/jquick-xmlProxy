@@ -13,7 +13,9 @@
  *
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
-package com.github.paohaijiao.xml.element;
+package com.paohaijiao.elements;
+
+import com.github.paohaijiao.xml.element.JQuickXmlElement;
 
 /**
  * packageName com.github.paohaijiao.xml.element

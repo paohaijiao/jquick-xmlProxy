@@ -13,30 +13,22 @@
  *
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
-package com.github.paohaijiao.xml.handler;
+package com.paohaijiao.elements;
 
 import com.github.paohaijiao.param.JContext;
-import com.github.paohaijiao.xml.element.JQuickCurlXmlElement;
-import com.github.paohaijiao.xml.element.JQuickXmlElement;
+import com.github.paohaijiao.result.JResult;
 import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
-import com.github.paohaijiao.xml.parser.JQuickXmlParser;
 
 /**
- * packageName com.github.paohaijiao.xml.handler
+ * packageName com.paohaijiao.elements
  *
  * @author Martin
  * @version 1.0.0
- * @since 2026/3/22
+ * @since 2026/3/26
  */
-public class JQuickCurlXmlParseHandler implements JQuickParseHandler{
-
+public class JQuickCurlXmlInvocationHandler extends JQuickXmlInvocationHandler {
     @Override
-    public JQuickXmlElement createJQuickXmlElement() {
-        return new JQuickCurlXmlElement();
-    }
-
-    @Override
-    public JQuickXmlInvocationHandler createlInvocationHandler(JContext context){
-        return new JQuickXmlInvocationHandler(createJQuickXmlElement());
+    protected JResult loadResult(String rawResult, JContext context) {
+        return null;
     }
 }

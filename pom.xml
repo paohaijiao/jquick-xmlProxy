@@ -16,6 +16,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <description>
+        A lightweight XML processing library that provides dynamic proxy-based
+        XML binding and parsing capabilities for Java applications.
+    </description>
     <dependencies>
         <dependency>
             <groupId>io.github.paohaijiao</groupId>
@@ -40,8 +44,6 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-    <description>
-    </description>
     <url>https://github.com/paohaijiao/jquick-xmlProxy</url>
     <licenses>
         <license>

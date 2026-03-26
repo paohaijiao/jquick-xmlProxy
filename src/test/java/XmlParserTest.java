@@ -14,6 +14,7 @@
  * Copyright (c) [2025-2099] Martin (goudingcheng@gmail.com)
  */
 
+import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.xml.factory.JQuickFactory;
 import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
 import com.paohaijiao.elements.JQuickCurlXmlParseHandler;
@@ -24,11 +25,22 @@ import java.util.List;
 import java.util.Map;
 
 
-public class XmlParserExample {
+public class XmlParserTest {
 
-    public static void main(String[] args) throws Exception {
+    public static void main1(String[] args) throws Exception {
         JQuickParseHandler handler=new JQuickCurlXmlParseHandler();
         JQuickFactory factory = new JQuickXmlFactory(handler,"apis.xml");
+        System.out.println(factory);
+        UserApi userApi = factory.createApi(UserApi.class);
+        System.out.println(userApi);
+        List<Map<String, Object>> list= userApi.all();
+        System.out.println(list);
+    }
+    public static void main(String[] args) throws Exception {
+        JQuickParseHandler handler=new JQuickCurlXmlParseHandler();
+        JContext context=new JContext();
+        context.put("haha","xixi");
+        JQuickFactory factory = new JQuickXmlFactory(handler,context,"apis.xml");
         System.out.println(factory);
         UserApi userApi = factory.createApi(UserApi.class);
         System.out.println(userApi);

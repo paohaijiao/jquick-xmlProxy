@@ -44,6 +44,7 @@ public class JQuickAbsFactory {
         String interfaceName = apiInterface.getName();
         JQuickXmlNamespace namespace = namespaceMap.get(interfaceName);
         JAssert.notNull(namespace, "No  configuration found for interface: " + interfaceName);
+        invocationHandler.init(namespace, context);
         return (T) Proxy.newProxyInstance(apiInterface.getClassLoader(), new Class[]{apiInterface}, invocationHandler);
     }
 }

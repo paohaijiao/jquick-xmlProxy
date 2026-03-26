@@ -29,6 +29,7 @@ import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
 public class JQuickCurlXmlInvocationHandler extends JQuickXmlInvocationHandler {
     @Override
     protected JResult loadResult(String rawResult, JContext context) {
-        return null;
+        JResult result=JResult.builder().string("[{\"userId\":\"12345\",\"userName\":\"张三\"}]").build();
+        return result;
     }
 }

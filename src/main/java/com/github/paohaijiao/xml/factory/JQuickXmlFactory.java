@@ -30,7 +30,14 @@ public class JQuickXmlFactory extends JQuickAbsFactory implements JQuickFactory 
     public JQuickXmlFactory(JQuickParseHandler handler, String xmlPath) {
         JQuickXmlParser parser = new JQuickXmlParser(handler.createJQuickXmlElement());
         this.namespaceMap = parser.parse(xmlPath);
-        this.invocationHandler = handler.createlInvocationHandler(new JContext());
+        this.context = new JContext();
+        this.invocationHandler = handler.createlInvocationHandler();
+    }
+    public JQuickXmlFactory(JQuickParseHandler handler,JContext context, String xmlPath) {
+        JQuickXmlParser parser = new JQuickXmlParser(handler.createJQuickXmlElement());
+        this.namespaceMap = parser.parse(xmlPath);
+        this.context =context;
+        this.invocationHandler = handler.createlInvocationHandler();
     }
 
 

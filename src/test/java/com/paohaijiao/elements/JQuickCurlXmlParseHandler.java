@@ -36,7 +36,7 @@ public class JQuickCurlXmlParseHandler implements JQuickParseHandler {
     }
 
     @Override
-    public JQuickXmlInvocationHandler createlInvocationHandler(JContext context){
+    public JQuickXmlInvocationHandler createlInvocationHandler(){
         return new JQuickCurlXmlInvocationHandler();
     }
 }

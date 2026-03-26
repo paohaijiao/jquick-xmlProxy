@@ -48,12 +48,16 @@ import java.util.regex.Pattern;
 @Slf4j
 public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
 
-    private static JConsole console=new JConsole();
+    protected static JConsole console=new JConsole();
 
     protected  JQuickXmlNamespace namespace;
 
+    protected  JContext context ;
 
-
+    public void init(JQuickXmlNamespace namespace, JContext context){
+        this.namespace=namespace;
+        this.context=context;
+    }
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if (method.getDeclaringClass() == Object.class) {
@@ -64,7 +68,9 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
         JQuickXmlMethod xmlMethod = namespace.getMethods().get(methodName);
         JAssert.notNull(xmlMethod,"No XmlMethod Configuration Found For Method: " + methodName);
         Map<String, Object> paramMap = buildParamMap(method, args);
-        JContext context = new JContext();
+        if(null==context){
+            context = new JContext();
+        }
         context.putAll(paramMap);
         return execute(xmlMethod, context, method);
     }
@@ -97,7 +103,7 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
         String contentLexer=replaceVariables(content,context);
         console.log(JLogLevel.INFO,"Merged Lexer command:"+ contentLexer);
         JResult rawResult = loadResult(contentLexer,context);
-        log.info("result:{}",rawResult);
+        console.log(JLogLevel.INFO,"result:"+ rawResult);
         Class<?> returnType = method.getReturnType();
         Type genericReturnType = method.getGenericReturnType();
         if (returnType.equals(Void.TYPE) || returnType.equals(java.lang.Void.class)) {

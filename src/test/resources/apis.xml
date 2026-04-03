@@ -2,7 +2,7 @@
 <!DOCTYPE curls PUBLIC "-//PAOHAIJIAO//DTD API CURL 1.0//EN"
         "classpath:dtd/Jquick-curl.dtd">
 <curls namespace="com.paohaijiao.UserApi">
-    <curl name="all" returnClass="java.util.List">
+    <curl name="all" returnClass="java.util.List" test="true">
         curl -X GET http://localhost:8080/api/users/1
     </curl>
     <curl name="findByName" returnClass="java.util.Map">

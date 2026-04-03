@@ -38,8 +38,6 @@ import java.util.Map;
  */
 public class JQuickXmlParser implements JQuickParser{
 
-
-
     private JQuickXmlElement jQuickXmlElement;
 
     public JQuickXmlParser(JQuickXmlElement jQuickXmlElement){

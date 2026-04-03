@@ -1,8 +1,10 @@
 <!ELEMENT curls (curl*)>
-<!ATTLIST curls namespace CDATA #REQUIRED>
+        <!ATTLIST curls namespace CDATA #REQUIRED>
 
-<!ELEMENT curl (#PCDATA)>
-<!ATTLIST curl 
-    name CDATA #REQUIRED
-    returnClass CDATA #REQUIRED
->
+        <!ELEMENT curl (#PCDATA)>
+        <!ATTLIST curl
+                name CDATA #REQUIRED
+                returnClass CDATA #REQUIRED
+                level CDATA #IMPLIED
+                test CDATA #IMPLIED
+                >

@@ -21,9 +21,7 @@ import com.github.paohaijiao.xml.element.JQuickXmlElement;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 import com.github.paohaijiao.xml.resolver.ClasspathEntityResolver;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -62,9 +60,9 @@ public class JQuickXmlParser implements JQuickParser{
                 throw new IllegalArgumentException("Resource not found in classpath: " + xmlPath);
             }
             Document document = builder.parse(inputStream);
-            NodeList curlsNodes = document.getElementsByTagName(jQuickXmlElement.getRootElementTagName());
-            for (int i = 0; i < curlsNodes.getLength(); i++) {
-                Element element = (Element) curlsNodes.item(i);
+            NodeList nodeList = document.getElementsByTagName(jQuickXmlElement.getRootElementTagName());
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element element = (Element) nodeList.item(i);
                 JQuickXmlNamespace curlNamespace = parseElement(element);
                 namespaceMap.put(curlNamespace.getNamespace(), curlNamespace);
             }
@@ -77,22 +75,41 @@ public class JQuickXmlParser implements JQuickParser{
     private JQuickXmlNamespace parseElement(Element element) {
         String namespaceName = element.getAttribute(jQuickXmlElement.getNameSpaceName());
         JQuickXmlNamespace namespace = JQuickXmlBuilder.create().namespace(namespaceName).build();
-        NodeList curlNodes = element.getElementsByTagName(jQuickXmlElement.getChildElementTagName());
-        for (int i = 0; i < curlNodes.getLength(); i++) {
-            Element curlElement = (Element) curlNodes.item(i);
+        NodeList nodeList = element.getElementsByTagName(jQuickXmlElement.getChildElementTagName());
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Element curlElement = (Element) nodeList.item(i);
             JQuickXmlMethod method = parseMethodElement(curlElement);
             namespace.addMethod(method.getName(), method);
         }
         return namespace;
     }
 
-    private JQuickXmlMethod parseMethodElement(Element curlElement) {
+    private JQuickXmlMethod parseMethodElement(Element element) {
+        HashMap<String,String> attr = new HashMap<>();
         JQuickXmlMethod method = new JQuickXmlMethod();
-        method.setName(curlElement.getAttribute(jQuickXmlElement.getMethodName()));
-        method.setReturnClass(curlElement.getAttribute(jQuickXmlElement.getMethodReturnClass()));
-        method.setParamClass(curlElement.getAttribute(jQuickXmlElement.getMethodParamClass()));
-        method.setContent(curlElement.getTextContent().trim());
-        method.setValue(curlElement.getAttribute(jQuickXmlElement.getValue()));
+        NamedNodeMap namedNodeMap=element.getAttributes();
+        for (int i = 0; i < namedNodeMap.getLength(); i++) {
+            Node attrNode = namedNodeMap.item(i);
+            String attrName = attrNode.getNodeName();
+            if(attrName.equalsIgnoreCase(jQuickXmlElement.getMethodName())){
+                method.setName(element.getAttribute(jQuickXmlElement.getMethodName()));
+            }else if(attrName.equalsIgnoreCase(jQuickXmlElement.getMethodReturnClass())){
+                method.setReturnClass(element.getAttribute(jQuickXmlElement.getMethodReturnClass()));
+            }else if(attrName.equalsIgnoreCase(jQuickXmlElement.getMethodParamClass())){
+                method.setParamClass(element.getAttribute(jQuickXmlElement.getMethodParamClass()));
+            }else if(attrName.equalsIgnoreCase(jQuickXmlElement.getMethodParamClass())){
+                method.setParamClass(element.getAttribute(jQuickXmlElement.getMethodParamClass()));
+            }else if(attrName.equalsIgnoreCase(jQuickXmlElement.getValue())){
+                method.setValue(element.getAttribute(jQuickXmlElement.getValue()));
+            }else{
+                String attrValue = attrNode.getNodeValue();
+                attr.put(attrName, attrValue);
+            }
+            method.setContent(element.getTextContent().trim());
+            method.setMap(attr);
+        }
+        method.setContent(element.getTextContent().trim());
+        method.setMap(attr);
         return method;
     }
 }

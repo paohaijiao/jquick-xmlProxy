@@ -17,6 +17,8 @@ package com.github.paohaijiao.xml.method;
 
 import lombok.Data;
 
+import java.util.HashMap;
+
 /**
  * packageName com.github.paohaijiao.xml
  *
@@ -36,5 +38,7 @@ public class JQuickXmlMethod {
     private String value;
 
     private String content;
+
+    private HashMap<String, String> map = new HashMap<>();
 
 }

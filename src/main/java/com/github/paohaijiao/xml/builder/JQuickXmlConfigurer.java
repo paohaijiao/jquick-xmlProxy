@@ -18,6 +18,7 @@ package com.github.paohaijiao.xml.builder;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -87,4 +88,11 @@ public interface JQuickXmlConfigurer {
      * @param content     方法内容
      */
     void setMethodAttributes(JQuickXmlMethod method, String name, String returnClass, String content);
+
+    /**
+     *
+     * @param method
+     * @param map
+     */
+    void setMethodAttributesMap(JQuickXmlMethod method, HashMap<String, String> map);
 }

@@ -34,6 +34,7 @@ package com.github.paohaijiao.xml.builder;
 import com.github.paohaijiao.xml.method.JQuickXmlMethod;
 import com.github.paohaijiao.xml.namespace.JQuickXmlNamespace;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -95,6 +96,13 @@ public class JQuickXmlConfigurerImpl implements JQuickXmlConfigurer {
             method.setName(name);
             method.setReturnClass(returnClass);
             method.setContent(content);
+        }
+    }
+
+    @Override
+    public void setMethodAttributesMap(JQuickXmlMethod method, HashMap<String, String> map) {
+        if (method != null) {
+            method.setMap(map);
         }
     }
 }

@@ -1,10 +1,43 @@
-<!ELEMENT curls (curl*)>
+<?xml version="1.0" encoding="UTF-8"?>
+        <!ELEMENT curls (curl*)>
         <!ATTLIST curls namespace CDATA #REQUIRED>
 
-        <!ELEMENT curl (#PCDATA)>
+        <!ELEMENT curl (#PCDATA | if | foreach | choose | where | set | trim)*>
         <!ATTLIST curl
                 name CDATA #REQUIRED
                 returnClass CDATA #REQUIRED
                 level CDATA #IMPLIED
                 test CDATA #IMPLIED
+                >
+
+        <!ELEMENT if (#PCDATA | if | foreach | choose | where | set | trim)*>
+        <!ATTLIST if
+                test CDATA #REQUIRED
+                >
+
+        <!ELEMENT foreach (#PCDATA | if | choose)*>
+        <!ATTLIST foreach
+                collection CDATA #REQUIRED
+                item CDATA #REQUIRED
+                index CDATA #IMPLIED
+                separator CDATA #IMPLIED
+                open CDATA #IMPLIED
+                close CDATA #IMPLIED
+                >
+
+        <!ELEMENT choose (when+, otherwise?)>
+        <!ELEMENT when (#PCDATA | if | foreach | where | set | trim)*>
+        <!ATTLIST when
+                test CDATA #REQUIRED
+                >
+        <!ELEMENT otherwise (#PCDATA | if | foreach | where | set | trim)*>
+
+        <!ELEMENT where (#PCDATA | if | foreach | choose)*>
+        <!ELEMENT set (#PCDATA | if | foreach | choose)*>
+        <!ELEMENT trim (#PCDATA | if | foreach | choose)*>
+        <!ATTLIST trim
+                prefix CDATA #IMPLIED
+                suffix CDATA #IMPLIED
+                prefixOverrides CDATA #IMPLIED
+                suffixOverrides CDATA #IMPLIED
                 >

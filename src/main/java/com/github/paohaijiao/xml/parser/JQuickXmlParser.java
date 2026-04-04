@@ -106,8 +106,45 @@ public class JQuickXmlParser implements JQuickParser{
             method.setContent(element.getTextContent().trim());
             method.setMap(attr);
         }
-        method.setContent(element.getTextContent().trim());
+        String fullContent = getElementContent(element);
+        method.setContent(fullContent);
         method.setMap(attr);
         return method;
+    }
+    private String getElementContent(Element element) {
+        StringBuilder content = new StringBuilder();
+        NodeList children = element.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeType() == Node.TEXT_NODE) {
+                content.append(child.getTextContent());
+            } else if (child.getNodeType() == Node.ELEMENT_NODE) {
+                content.append(serializeElement((Element) child));
+            }
+        }
+        return content.toString().trim();
+    }
+    private String serializeElement(Element element) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<").append(element.getTagName());
+        NamedNodeMap attrs = element.getAttributes();
+        for (int i = 0; i < attrs.getLength(); i++) {
+            Node attr = attrs.item(i);
+            sb.append(" ").append(attr.getNodeName()).append("=\"")
+                    .append(attr.getNodeValue()).append("\"");
+        }
+        sb.append(">");
+        NodeList children = element.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+            if (child.getNodeType() == Node.TEXT_NODE) {
+                sb.append(child.getTextContent());
+            } else if (child.getNodeType() == Node.ELEMENT_NODE) {
+                sb.append(serializeElement((Element) child));
+            }
+        }
+
+        sb.append("</").append(element.getTagName()).append(">");
+        return sb.toString();
     }
 }

@@ -2,74 +2,156 @@
 <!DOCTYPE curls PUBLIC "-//PAOHAIJIAO//DTD API CURL 1.0//EN"
         "classpath:dtd/Jquick-curl.dtd">
 <curls namespace="com.paohaijiao.UserApi">
-    <curl name="all" returnClass="java.util.List" test="true">
-        curl -X GET http://localhost:8080/api/users/1
-    </curl>
-    <curl name="findByName" returnClass="java.util.Map">
-        curl -X GET ${host}
+    <curl name="getUser" returnClass="com.paohaijiao.model.User">
+        <if test="id != null &amp;&amp; id > 0">
+            curl -X GET http://localhost:8080/api/users/#{id}
+        </if>
+        <if test="name != null &amp;&amp; name.length() > 0">
+            curl -X GET http://localhost:8080/api/users?name=#{name}
+        </if>
     </curl>
 
-    <curl name="search" returnClass="java.util.List">
-        curl -X POST http://localhost:8080/api/users/createUser \
+    <curl name="searchUsers" returnClass="java.util.List">
+        curl -X POST http://localhost:8080/api/users/search \
         -H "Content-Type: application/json" \
-        -d '{"name":"John Doe","email":"john@example.com"}'
+        -d '{
+        <if test="name != null &amp;&amp; !name.isEmpty()">
+            "name": "#{name}",
+        </if>
+        <if test="age != null &amp;&amp; age >= 18">
+            "age": #{age},
+        </if>
+        <if test="roles != null &amp;&amp; roles.size() > 0">
+            "roles": [
+            <foreach collection="roles" item="role" separator=",">
+                "#{role}"
+            </foreach>
+            ],
+        </if>
+        <if test="address != null &amp;&amp; address.city != null">
+            "city": "#{address.city}",
+            "street": "#{address.street}"
+        </if>
+        "enabled": true
+        }'
     </curl>
-    <curl name="usersByVariable" returnClass="com.github.paohaijiao.test.model.JUser">
-        curl -X POST http://localhost:8080/api/users/createUser \
+
+    <curl name="batchOperation" returnClass="java.lang.String">
+        <choose>
+            <when test="operation == 'create'">
+                curl -X POST http://localhost:8080/api/users \
+                -H "Content-Type: application/json" \
+                -d '{"name": "#{name}", "email": "#{email}"}'
+            </when>
+            <when test="operation == 'update'">
+                curl -X PUT http://localhost:8080/api/users/#{id} \
+                -H "Content-Type: application/json" \
+                -d '{"name": "#{name}", "email": "#{email}"}'
+            </when>
+            <when test="operation == 'delete'">
+                curl -X DELETE http://localhost:8080/api/users/#{id}
+            </when>
+            <otherwise>
+                curl -X GET http://localhost:8080/api/users
+            </otherwise>
+        </choose>
+    </curl>
+
+    <curl name="dynamicQuery" returnClass="java.util.List">
+        curl -X GET "http://localhost:8080/api/users?
+        <where>
+            <if test="name != null">
+                name=#{name}
+            </if>
+            <if test="email != null">
+                AND email=#{email}
+            </if>
+            <if test="age != null">
+                AND age=#{age}
+            </if>
+            <if test="city != null">
+                AND city=#{city}
+            </if>
+        </where>
+        "
+    </curl>
+
+    <curl name="updateUser" returnClass="com.paohaijiao.model.User">
+        curl -X PUT http://localhost:8080/api/users/#{id} \
         -H "Content-Type: application/json" \
-        -d '{"name":#{name},"email":#{email}}'
+        -d '{
+        <set>
+            <if test="name != null">
+                "name": "#{name}",
+            </if>
+            <if test="email != null">
+                "email": "#{email}",
+            </if>
+            <if test="age != null">
+                "age": #{age},
+            </if>
+            <if test="phone != null">
+                "phone": "#{phone}"
+            </if>
+        </set>
+        }'
     </curl>
 
-    <curl name="usersPut" returnClass="com.github.paohaijiao.test.model.JUser">
-        curl -X PUT http://localhost:8080/api/users/1 \
+    <curl name="advancedSearch" returnClass="java.util.List">
+        curl -X POST http://localhost:8080/api/users/advanced \
         -H "Content-Type: application/json" \
-        -d '{"name":"John Doe Updated","email":"john.updated@example.com"}'
+        -d '{
+        <trim prefix="{" suffix="}" prefixOverrides=",">
+            <if test="name != null">
+                "name": "#{name}",
+            </if>
+            <if test="email != null">
+                "email": "#{email}",
+            </if>
+            <if test="ageFrom != null">
+                "ageFrom": #{ageFrom},
+            </if>
+            <if test="ageTo != null">
+                "ageTo": #{ageTo},
+            </if>
+            <if test="tags != null &amp;&amp; tags.size() > 0">
+                "tags": [
+                <foreach collection="tags" item="tag" separator=",">
+                    "#{tag}"
+                </foreach>
+                ]
+            </if>
+        </trim>
+        }'
     </curl>
 
-    <curl name="usersPatch" returnClass="com.github.paohaijiao.test.model.JUser">
-        curl -X PATCH http://localhost:8080/api/users/1 \
+    <curl name="batchCreate" returnClass="java.util.List">
+        curl -X POST http://localhost:8080/api/users/batch \
         -H "Content-Type: application/json" \
-        -d '{"name":"John Doe Patched"}'
+        -d '{
+        "users": [
+        <foreach collection="userList" item="user" separator=",">
+            {
+            "name": "#{user.name}",
+            "email": "#{user.email}"
+        </foreach>
+        ]
+        }'
     </curl>
 
-    <curl name="usersDelete" returnClass="java.lang.Void">
-        curl -X DELETE http://localhost:8080/api/users/1
+    <curl name="complexCondition" returnClass="java.util.Map">
+        <if test="user != null &amp;&amp; user.role == 'ADMIN' &amp;&amp; user.permissions.contains('WRITE')">
+            curl -X POST http://localhost:8080/api/admin/users \
+            -H "Authorization: Bearer #{token}" \
+            -H "Content-Type: application/json" \
+            -d '{
+            "username": "#{user.username}",
+            "level": #{user.level}
+            }'
+        </if>
+        <if test="user != null &amp;&amp; user.role == 'USER'">
+            curl -X GET http://localhost:8080/api/users/#{user.id}
+        </if>
     </curl>
 
-    <curl name="usersHead" returnClass="java.lang.Void">
-        curl -X HEAD -I http://localhost:8080/api/users/1
-    </curl>
-
-    <curl name="usersOptions" returnClass="com.github.paohaijiao.model.JResult">
-        curl -X OPTIONS http://localhost:8080/api/users/1
-    </curl>
-
-    <curl name="usersTrace" returnClass="java.lang.String">
-        curl -X TRACE http://localhost:8080/api/users/trace \
-        -H "Content-Type: text/plain" \
-        -d "This is a trace request body"
-    </curl>
-
-    <curl name="upload" returnClass="java.lang.String">
-        curl -X POST http://localhost:8080/api/users/upload \
-        -F "file=@D:\test\test.txt"
-    </curl>
-
-    <curl name="upload1" returnClass="java.lang.String">
-        curl -X POST http://localhost:8080/api/users/upload-multiple \
-        -F "files=@D:\test\test.txt" \
-        -F "files=@D:\test\test1.txt"
-    </curl>
-
-    <curl name="download" returnClass="byte[]">
-        curl -X GET http://localhost:8080/api/users/download/test.txt \
-        --output 'd://test//download.txt'
-    </curl>
-
-    <curl name="uploadWithPostParams" returnClass="java.lang.String">
-        curl -X POST http://localhost:8080/api/users/upload-with-params \
-        -F "userId=123" \
-        -F "username=john" \
-        -F "file=@D:\test\test.txt"
-    </curl>
 </curls>

@@ -100,8 +100,10 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
 
     protected  Object execute(JQuickXmlMethod curlMethod, JContext context, Method method) throws IOException {
         String content = curlMethod.getContent();
-        String contentLexer=replaceVariables(content,context);
-        console.log(JLogLevel.INFO,"Merged Lexer command:"+ contentLexer);
+        JContext jContext=new JContext();
+        jContext.putAll(context);
+        String dynamicParsedContent = JQuickEvaluateProcessor.parse(content, jContext);
+        String contentLexer = replaceVariables(dynamicParsedContent, jContext);
         JResult rawResult = loadResult(contentLexer,context);
         console.log(JLogLevel.INFO,"result:"+ rawResult);
         Class<?> returnType = method.getReturnType();

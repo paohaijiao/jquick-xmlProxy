@@ -70,7 +70,6 @@ public class JQuickXmlDynamicParserTest {
     public void testVariableNotFound() {
         JContext context = new JContext();
         context.put("name", "John Doe");
-
         String content = "curl -X GET http://localhost:8080/api/users/#{nonExistent}";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users/#{nonExistent}", result);
@@ -114,7 +113,6 @@ public class JQuickXmlDynamicParserTest {
     public void testIfTagStringNotEquals() {
         JContext context = new JContext();
         context.put("status", "inactive");
-
         String content = "curl -X GET http://localhost:8080/api/users<if test=\"status != 'active'\">/inactive</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users/inactive", result);
@@ -124,7 +122,6 @@ public class JQuickXmlDynamicParserTest {
     public void testIfTagNullCheck() {
         JContext context = new JContext();
         context.put("name", null);
-
         String content = "curl -X GET http://localhost:8080/api/users<if test=\"name != null\">/named</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users", result);
@@ -134,7 +131,6 @@ public class JQuickXmlDynamicParserTest {
     public void testIfTagNotNullCheck() {
         JContext context = new JContext();
         context.put("name", "John");
-
         String content = "curl -X GET http://localhost:8080/api/users<if test=\"name != null\">/named</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users/named", result);

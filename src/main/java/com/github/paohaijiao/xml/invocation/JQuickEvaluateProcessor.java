@@ -125,7 +125,6 @@ public class JQuickEvaluateProcessor {
      */
     private static String parseDynamicTag(Element element, JContext context) {
         String tagName = element.getTagName().toLowerCase();
-
         switch (tagName) {
             case "if":
                 return parseIfTag(element, context);

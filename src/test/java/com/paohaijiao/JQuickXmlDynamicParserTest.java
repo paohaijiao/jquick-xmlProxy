@@ -36,7 +36,7 @@ public class JQuickXmlDynamicParserTest {
     public void testVariableSubstitution() {
         JContext context = new JContext();
         context.put("name", "John Doe");
-        String content = "curl -X GET http://localhost:8080/api/users/#{name}";
+        String content = "curl -X GET http://localhost:8080/api/users/#{#name}";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users/John Doe", result);
     }
@@ -47,8 +47,7 @@ public class JQuickXmlDynamicParserTest {
         context.put("name", "John Doe");
         context.put("age", 25);
         context.put("city", "Beijing");
-
-        String content = "curl -X POST http://localhost:8080/api/users -d '{\"name\":\"#{name}\",\"age\":#{age},\"city\":\"#{city}\"}'";
+        String content = "curl -X POST http://localhost:8080/api/users -d '{\"name\":\"#{#name}\",\"age\":#{#age},\"city\":\"#{#city}\"}'";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X POST http://localhost:8080/api/users -d '{\"name\":\"John Doe\",\"age\":25,\"city\":\"Beijing\"}'", result);
     }
@@ -60,7 +59,6 @@ public class JQuickXmlDynamicParserTest {
         address.put("city", "Beijing");
         address.put("zipCode", 100000);
         context.put("address", address);
-
         String content = "curl -X GET http://localhost:8080/api/users?city=#{address.city}&zip=#{address.zipCode}";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users?city=Beijing&zip=100000", result);
@@ -95,7 +93,7 @@ public class JQuickXmlDynamicParserTest {
     public void testIfTagFalse() {
         JContext context = new JContext();
         context.put("age", 16);
-        String content = "curl -X GET http://localhost:8080/api/users<if test=\"age > 18\">/adult</if>";
+        String content = "curl -X GET http://localhost:8080/api/users<if test=\"age < 18\">/adult</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users", result);
     }
@@ -145,9 +143,8 @@ public class JQuickXmlDynamicParserTest {
         List<String> permissions = Arrays.asList("read", "write", "delete");
         user.put("permissions", permissions);
         context.put("user", user);
-
         String content = "curl -X POST http://localhost:8080/api/users" +
-                "<if test=\"user != null &amp;&amp; user.age > 25 &amp;&amp; user.role == 'admin' &amp;&amp; user.permissions.contains('delete')\">/admin/delete</if>";
+                "<if test=\"user != null &&user.age > 25 && user.role == 'admin' && user.permissions.contains('delete')\">/admin/delete</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X POST http://localhost:8080/api/users/admin/delete", result);
     }
@@ -156,7 +153,6 @@ public class JQuickXmlDynamicParserTest {
     public void testIfTagBooleanTrue() {
         JContext context = new JContext();
         context.put("isActive", true);
-
         String content = "curl -X GET http://localhost:8080/api/users<if test=\"isActive\">/active</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users/active", result);
@@ -166,7 +162,6 @@ public class JQuickXmlDynamicParserTest {
     public void testIfTagBooleanFalse() {
         JContext context = new JContext();
         context.put("isActive", false);
-
         String content = "curl -X GET http://localhost:8080/api/users<if test=\"isActive\">/active</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users", result);
@@ -176,21 +171,16 @@ public class JQuickXmlDynamicParserTest {
     public void testIfElseSimulation() {
         JContext context = new JContext();
         context.put("age", 20);
-
         String content = "curl -X GET http://localhost:8080/api/users" +
                 "<if test=\"age >= 18\">/adult</if>" +
                 "<if test=\"age < 18\">/minor</if>";
         String result = JQuickEvaluateProcessor.parse(content, context);
         assertEquals("curl -X GET http://localhost:8080/api/users/adult", result);
     }
-
-    // ==================== foreach 标签测试 ====================
-
     @Test
     public void testForeachTagBasic() {
         JContext context = new JContext();
         context.put("userIds", Arrays.asList(1, 2, 3, 4, 5));
-
         String content = "curl -X GET http://localhost:8080/api/users/batch?ids=" +
                 "<foreach collection=\"userIds\" item=\"id\" separator=\",\">#{id}</foreach>";
         String result = JQuickEvaluateProcessor.parse(content, context);

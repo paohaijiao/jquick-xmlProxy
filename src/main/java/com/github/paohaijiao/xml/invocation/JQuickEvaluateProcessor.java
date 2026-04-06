@@ -15,17 +15,24 @@
  */
 package com.github.paohaijiao.xml.invocation;
 
+import com.github.paohaijiao.console.JConsole;
+import com.github.paohaijiao.enums.JLogLevel;
 import com.github.paohaijiao.param.JContext;
+import com.github.paohaijiao.value.ValueResolver;
+import com.github.paohaijiao.xml.enums.JQuickXmlEscapeEnums;
 import com.github.paohaijiao.xml.ongl.OgnlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 public class JQuickEvaluateProcessor {
+
+    private static JConsole console=new JConsole();
 
     private static final DocumentBuilderFactory factory;
 
@@ -52,12 +59,19 @@ public class JQuickEvaluateProcessor {
         if (content == null || content.isEmpty()) {
             return content;
         }
-        if (!containsDynamicTags(content)) {
-            return content;
-        }
         try {
-            String wrappedContent = wrapAsXml(content);
+            console.log(JLogLevel.INFO,"the orignal content is \n" + content);
+            String preprocessed = processAndEscapeAttributes(content,context);
+            console.log(JLogLevel.INFO,"the value content is \n" + preprocessed);
+            String wrappedContent = wrapAsXml(preprocessed);
+            console.log(JLogLevel.INFO,"the wrappedContent is \n" + wrappedContent);
             DocumentBuilder builder = factory.newDocumentBuilder();
+            builder.setErrorHandler(new org.xml.sax.helpers.DefaultHandler() {
+                @Override
+                public void fatalError(org.xml.sax.SAXParseException e) {}
+                @Override
+                public void error(org.xml.sax.SAXParseException e) {}
+            });
             Document doc = builder.parse(new org.xml.sax.InputSource(new StringReader(wrappedContent)));
             Element root = doc.getDocumentElement();
             String result = parseNode(root, context);
@@ -66,6 +80,20 @@ public class JQuickEvaluateProcessor {
             log.warn("Failed to parse dynamic tags, fallback to original content: {}", content, e);
             return content;
         }
+    }
+    private static String processAndEscapeAttributes(String content, JContext context) {
+        if (content == null) return null;
+        String rendered = ValueResolver.renderTemplate(content, context);
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("test\\s*=\\s*\"([^\"]*)\"");
+        java.util.regex.Matcher matcher = pattern.matcher(rendered);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String expr = matcher.group(1);
+            String escapedExpr = escapeXml(expr);
+            matcher.appendReplacement(sb, "test=\"" + escapedExpr + "\"");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /**
@@ -96,17 +124,16 @@ public class JQuickEvaluateProcessor {
                 case Node.TEXT_NODE:
                     String text = child.getTextContent();
                     if (text != null && !text.trim().isEmpty()) {
-                        result.append(replaceVariables(text, context));
+                        result.append(text);
                     }
                     break;
                 case Node.CDATA_SECTION_NODE:
                     String cdata = child.getTextContent();
                     if (cdata != null) {
-                        result.append(replaceVariables(cdata, context));
+                        result.append(cdata);
                     }
                     break;
                 case Node.ELEMENT_NODE:
-                    String tagName = child.getNodeName();
                     String parsed = parseDynamicTag((Element) child, context);
                     if (parsed != null) {
                         result.append(parsed);
@@ -116,7 +143,6 @@ public class JQuickEvaluateProcessor {
                     break;
             }
         }
-
         return result.toString();
     }
 
@@ -196,11 +222,7 @@ public class JQuickEvaluateProcessor {
             }
             JContext itemContext = new JContext();
             itemContext.putAll(context);
-            itemContext.put(item, obj);
-            if (index != null && !index.isEmpty()) {
-                itemContext.put(index, idx);
-            }
-            itemContext.put(item + "_index", idx);
+            element.setTextContent(obj.toString());
             String itemContent = parseNode(element, itemContext);
             result.append(itemContent);
             idx++;
@@ -345,31 +367,14 @@ public class JQuickEvaluateProcessor {
         return null;
     }
 
-    /**
-     * 替换变量（支持 OGNL 表达式）
-     */
-    private static String replaceVariables(String text, JContext context) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("#\\{([^}]+)\\}");
-        java.util.regex.Matcher matcher = pattern.matcher(text);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String expression = matcher.group(1);
-            try {
-                Object value = OgnlUtils.getValue(expression, context);
-                if (value != null) {
-                    matcher.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement(value.toString()));
-                } else {
-                    matcher.appendReplacement(sb, matcher.group(0));
-                }
-            } catch (Exception e) {
-                log.warn("Failed to evaluate expression: {}", expression, e);
-                matcher.appendReplacement(sb, matcher.group(0));
-            }
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
-    }
+   public static String escapeXml(String content) {
+       if (content == null) {
+           return null;
+       }
+       String result = content;
+       for (JQuickXmlEscapeEnums escapeEnum : JQuickXmlEscapeEnums.values()) {
+           result = escapeEnum.escape(result);
+       }
+       return result;
+   }
 }

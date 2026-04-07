@@ -26,8 +26,13 @@ import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 @Slf4j
 public class JQuickEvaluateProcessor {
@@ -75,6 +80,7 @@ public class JQuickEvaluateProcessor {
             Document doc = builder.parse(new org.xml.sax.InputSource(new StringReader(wrappedContent)));
             Element root = doc.getDocumentElement();
             String result = parseNode(root, context);
+            console.log(JLogLevel.INFO,"the result is \n" + result);
             return result;
         } catch (Exception e) {
             log.warn("Failed to parse dynamic tags, fallback to original content: {}", content, e);
@@ -83,9 +89,9 @@ public class JQuickEvaluateProcessor {
     }
     private static String processAndEscapeAttributes(String content, JContext context) {
         if (content == null) return null;
-        String rendered = ValueResolver.renderTemplate(content, context);
+      //  String rendered = ValueResolver.renderTemplate(content, context);
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("test\\s*=\\s*\"([^\"]*)\"");
-        java.util.regex.Matcher matcher = pattern.matcher(rendered);
+        java.util.regex.Matcher matcher = pattern.matcher(content);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
             String expr = matcher.group(1);
@@ -124,7 +130,7 @@ public class JQuickEvaluateProcessor {
                 case Node.TEXT_NODE:
                     String text = child.getTextContent();
                     if (text != null && !text.trim().isEmpty()) {
-                        result.append(text);
+                        result.append(replaceVariables(text, context));
                     }
                     break;
                 case Node.CDATA_SECTION_NODE:
@@ -222,7 +228,7 @@ public class JQuickEvaluateProcessor {
             }
             JContext itemContext = new JContext();
             itemContext.putAll(context);
-            element.setTextContent(obj.toString());
+            itemContext.put(item,obj);
             String itemContent = parseNode(element, itemContext);
             result.append(itemContent);
             idx++;
@@ -231,7 +237,6 @@ public class JQuickEvaluateProcessor {
         if (close != null && !close.isEmpty()) {
             result.append(close);
         }
-
         return result.toString();
     }
 
@@ -338,29 +343,32 @@ public class JQuickEvaluateProcessor {
         return content;
     }
 
-    /**
-     * 将对象转换为 Iterable
-     */
     private static Iterable<?> toIterable(Object obj) {
         if (obj == null) {
             return null;
         }
-
         if (obj instanceof Iterable) {
             return (Iterable<?>) obj;
         }
 
-        if (obj instanceof Object[]) {
-            return java.util.Arrays.asList((Object[]) obj);
+        if (obj instanceof int[]) {
+            return IntStream.of((int[]) obj).boxed().collect(Collectors.toList());
         }
-
+        if (obj instanceof long[]) {
+            return LongStream.of((long[]) obj).boxed().collect(Collectors.toList());
+        }
+        if (obj instanceof double[]) {
+            return DoubleStream.of((double[]) obj).boxed().collect(Collectors.toList());
+        }
+        if (obj instanceof Object[]) {
+            return new ArrayList<>(Arrays.asList((Object[]) obj));
+        }
         if (obj instanceof Map) {
             return ((Map<?, ?>) obj).entrySet();
         }
-
-        if (obj instanceof java.util.Iterator) {
-            java.util.List<Object> list = new java.util.ArrayList<>();
-            ((java.util.Iterator<?>) obj).forEachRemaining(list::add);
+        if (obj instanceof Iterator) {
+            List<Object> list = new ArrayList<>();
+            ((Iterator<?>) obj).forEachRemaining(list::add);
             return list;
         }
 
@@ -377,4 +385,21 @@ public class JQuickEvaluateProcessor {
        }
        return result;
    }
+    private static String replaceVariables(String text, JContext context) {
+        if (text == null || context == null) return text;
+        Pattern pattern = Pattern.compile("#\\{([^}]+)\\}");
+        Matcher matcher = pattern.matcher(text);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String expression = matcher.group(1);
+            Object value = OgnlUtils.getValue(expression, context);
+            if (value != null) {
+                matcher.appendReplacement(sb, Matcher.quoteReplacement(value.toString()));
+            } else {
+                matcher.appendReplacement(sb, matcher.group(0));
+            }
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
 }

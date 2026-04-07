@@ -35,12 +35,19 @@ import java.util.regex.Pattern;
 
 @Data
 public class JQuickXmlForeachTag implements JQuickXmlTag {
+
     private String collection;
+
     private String item;
+
     private String index;
+
     private String separator;
+
     private String open;
+
     private String close;
+
     private String content;
 
     @Override
@@ -75,6 +82,7 @@ public class JQuickXmlForeachTag implements JQuickXmlTag {
                 itemContext.put(index, idx);
             }
             itemContext.put(item + "_index", idx);
+            // 在这里替换变量
             String processedContent = replaceVariables(content, itemContext);
             result.append(processedContent);
             idx++;
@@ -86,6 +94,7 @@ public class JQuickXmlForeachTag implements JQuickXmlTag {
 
         return result.toString();
     }
+
 
     private String replaceVariables(String text, JContext context) {
         Pattern pattern = Pattern.compile("#\\{([^}]+)\\}");

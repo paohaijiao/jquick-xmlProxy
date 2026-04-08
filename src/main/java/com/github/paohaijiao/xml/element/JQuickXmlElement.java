@@ -1,5 +1,7 @@
 package com.github.paohaijiao.xml.element;
 
+import java.util.List;
+
 public interface JQuickXmlElement {
     /**
      * 获取元素名称
@@ -8,7 +10,7 @@ public interface JQuickXmlElement {
 
     public String getRootElementTagName();
 
-    public String getChildElementTagName();
+    public List<String> getChildElementTagName();
 
     public String getMethodName();
 

@@ -39,6 +39,8 @@ public class JQuickXmlMethod {
 
     private String content;
 
+    private String tag;
+
     private HashMap<String, String> map = new HashMap<>();
 
 }

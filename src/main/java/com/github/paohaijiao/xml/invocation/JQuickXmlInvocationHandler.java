@@ -29,10 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -96,23 +93,17 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
         }
         return paramMap;
     }
-    protected abstract JResult loadResult(String rawResult, JContext context);
+    protected abstract Object loadResult(String rawResult, JContext context, Method method);
 
-    protected  Object execute(JQuickXmlMethod curlMethod, JContext context, Method method) throws IOException {
-        String content = curlMethod.getContent();
+    protected  Object execute(JQuickXmlMethod xmlMethod, JContext context, Method method) throws IOException {
+        String content = xmlMethod.getContent();
         JContext jContext=new JContext();
         jContext.putAll(context);
         String dynamicParsedContent = JQuickEvaluateProcessor.parse(content, jContext);
-        String contentLexer = replaceVariables(dynamicParsedContent, jContext);
-        JResult rawResult = loadResult(contentLexer,context);
+        String lexer = replaceVariables(dynamicParsedContent, jContext);
+        Object rawResult = loadResult(lexer,context,method);
         console.log(JLogLevel.INFO,"result:"+ rawResult);
-        Class<?> returnType = method.getReturnType();
-        Type genericReturnType = method.getGenericReturnType();
-        if (returnType.equals(Void.TYPE) || returnType.equals(java.lang.Void.class)) {
-            return null;
-        }
-        JTypeReference<?> typeReference = createTypeReference(genericReturnType);
-        return JResultFactory.createResult(rawResult, typeReference);
+        return rawResult;
     }
 
     protected JTypeReference<?> createTypeReference(Type genericType) {

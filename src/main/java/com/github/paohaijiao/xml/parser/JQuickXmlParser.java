@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,11 +74,15 @@ public class JQuickXmlParser implements JQuickParser{
     private JQuickXmlNamespace parseElement(Element element) {
         String namespaceName = element.getAttribute(jQuickXmlElement.getNameSpaceName());
         JQuickXmlNamespace namespace = JQuickXmlBuilder.create().namespace(namespaceName).build();
-        NodeList nodeList = element.getElementsByTagName(jQuickXmlElement.getChildElementTagName());
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Element curlElement = (Element) nodeList.item(i);
-            JQuickXmlMethod method = parseMethodElement(curlElement);
-            namespace.addMethod(method.getName(), method);
+        List<String> tagList= jQuickXmlElement.getChildElementTagName();
+        for(String tag:tagList){
+            NodeList nodeList = element.getElementsByTagName(tag);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element curlElement = (Element) nodeList.item(i);
+                JQuickXmlMethod method = parseMethodElement(curlElement);
+                method.setTag(tag);
+                namespace.addMethod(method.getName(), method);
+            }
         }
         return namespace;
     }

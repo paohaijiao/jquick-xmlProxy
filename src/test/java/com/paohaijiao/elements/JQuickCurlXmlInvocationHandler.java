@@ -17,7 +17,10 @@ package com.paohaijiao.elements;
 
 import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.result.JResult;
+import com.github.paohaijiao.type.JTypeReference;
 import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
+
+import java.lang.reflect.Method;
 
 /**
  * packageName com.paohaijiao.elements
@@ -28,7 +31,7 @@ import com.github.paohaijiao.xml.invocation.JQuickXmlInvocationHandler;
  */
 public class JQuickCurlXmlInvocationHandler extends JQuickXmlInvocationHandler {
     @Override
-    protected JResult loadResult(String rawResult, JContext context) {
+    protected Object loadResult(String rawResult, JContext context, Method typeReference) {
         JResult result=JResult.builder().string("[{\"userId\":\"12345\",\"userName\":\"张三\"}]").build();
         return result;
     }

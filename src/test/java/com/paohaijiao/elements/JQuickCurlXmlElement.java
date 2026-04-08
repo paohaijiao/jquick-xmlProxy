@@ -17,6 +17,9 @@ package com.paohaijiao.elements;
 
 import com.github.paohaijiao.xml.element.JQuickXmlElement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * packageName com.github.paohaijiao.xml.element
  *
@@ -36,8 +39,10 @@ public class JQuickCurlXmlElement implements JQuickXmlElement {
     }
 
     @Override
-    public String getChildElementTagName() {
-        return "curl";
+    public List<String> getChildElementTagName() {
+        List<String> list=new ArrayList<>();
+        list.add("curl");
+        return list;
     }
 
     @Override

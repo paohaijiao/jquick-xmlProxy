@@ -21,6 +21,8 @@ import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.value.ValueResolver;
 import com.github.paohaijiao.xml.enums.JQuickXmlEscapeEnums;
 import com.github.paohaijiao.xml.ongl.OgnlUtils;
+import com.github.paohaijiao.xml.wrapper.WrapperManager;
+import com.github.paohaijiao.xml.wrapper.data.JQuickXmlWrapperData;
 import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilder;
@@ -394,7 +396,9 @@ public class JQuickEvaluateProcessor {
             String expression = matcher.group(1);
             Object value = OgnlUtils.getValue(expression, context);
             if (value != null) {
-                matcher.appendReplacement(sb, Matcher.quoteReplacement(value.toString()));
+                JQuickXmlWrapperData data=new JQuickXmlWrapperData(value);
+                Object wrappedValue = WrapperManager.wrap(data);
+                matcher.appendReplacement(sb, Matcher.quoteReplacement(wrappedValue.toString()));// Matcher.quoteReplacement(value.toString())
             } else {
                 matcher.appendReplacement(sb, matcher.group(0));
             }

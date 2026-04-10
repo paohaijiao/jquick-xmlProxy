@@ -69,7 +69,7 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
             context = new JContext();
         }
         context.putAll(paramMap);
-        return execute(xmlMethod, context, method);
+        return execute(xmlMethod, context, method,args);
     }
 
     private Map<String, Object> buildParamMap(Method method, Object[] args) {
@@ -93,15 +93,15 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
         }
         return paramMap;
     }
-    protected abstract Object loadResult(String rawResult, JContext context, Method method);
+    protected abstract Object loadResult(String rawResult, JContext context, Method method,Object[] args);
 
-    protected  Object execute(JQuickXmlMethod xmlMethod, JContext context, Method method) throws IOException {
+    protected  Object execute(JQuickXmlMethod xmlMethod, JContext context, Method method,Object[]  args) throws IOException {
         String content = xmlMethod.getContent();
         JContext jContext=new JContext();
         jContext.putAll(context);
         String dynamicParsedContent = JQuickEvaluateProcessor.parse(content, jContext);
         String lexer = replaceVariables(dynamicParsedContent, jContext);
-        Object rawResult = loadResult(lexer,context,method);
+        Object rawResult = loadResult(lexer,context,method,args);
         console.log(JLogLevel.INFO,"result:"+ rawResult);
         return rawResult;
     }

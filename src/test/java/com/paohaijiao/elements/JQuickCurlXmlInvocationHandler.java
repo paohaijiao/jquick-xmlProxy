@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
  */
 public class JQuickCurlXmlInvocationHandler extends JQuickXmlInvocationHandler {
     @Override
-    protected Object loadResult(String rawResult, JContext context, Method typeReference) {
+    protected Object loadResult(String rawResult, JContext context, Method typeReference, Object[] args) {
         JResult result=JResult.builder().string("[{\"userId\":\"12345\",\"userName\":\"张三\"}]").build();
         return result;
     }

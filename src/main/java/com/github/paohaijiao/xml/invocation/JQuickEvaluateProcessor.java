@@ -84,8 +84,7 @@ public class JQuickEvaluateProcessor {
             String result = parseNode(root, context);
             console.log(JLogLevel.INFO,"the result is \n" + result);
             return result;
-        } catch (Exception e) {
-            log.warn("Failed to parse dynamic tags, fallback to original content: {}", content, e);
+        } catch (Exception e) {//兼容里面含有<>标签的数据比如说java 泛型
             return content;
         }
     }

@@ -67,11 +67,9 @@ public class JQuickEvaluateProcessor {
             return content;
         }
         try {
-            console.log(JLogLevel.INFO,"the orignal content is \n" + content);
+            console.log(JLogLevel.INFO,"the  content is \n" + content);
             String preprocessed = processAndEscapeAttributes(content,context);
-            console.log(JLogLevel.INFO,"the value content is \n" + preprocessed);
             String wrappedContent = wrapAsXml(preprocessed);
-            console.log(JLogLevel.INFO,"the wrappedContent is \n" + wrappedContent);
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setErrorHandler(new org.xml.sax.helpers.DefaultHandler() {
                 @Override

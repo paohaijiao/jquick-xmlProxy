@@ -123,7 +123,7 @@ public class JQuickXmlParser implements JQuickParser{
             Node child = children.item(i);
             if (child.getNodeType() == Node.TEXT_NODE) {
                 content.append(child.getTextContent());
-            }  else if (child.getNodeType() == Node.CDATA_SECTION_NODE) {
+            } else if (child.getNodeType() == Node.CDATA_SECTION_NODE) {  //
                 content.append(child.getTextContent());  // CDATA 内容直接添加
             } else if (child.getNodeType() == Node.ELEMENT_NODE) {
                 content.append(serializeElement((Element) child));

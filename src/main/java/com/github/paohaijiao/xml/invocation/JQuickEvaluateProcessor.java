@@ -67,11 +67,9 @@ public class JQuickEvaluateProcessor {
             return content;
         }
         try {
-            console.log(JLogLevel.INFO,"the orignal content is \n" + content);
+            console.log(JLogLevel.INFO,"the  content is \n" + content);
             String preprocessed = processAndEscapeAttributes(content,context);
-            console.log(JLogLevel.INFO,"the value content is \n" + preprocessed);
             String wrappedContent = wrapAsXml(preprocessed);
-            console.log(JLogLevel.INFO,"the wrappedContent is \n" + wrappedContent);
             DocumentBuilder builder = factory.newDocumentBuilder();
             builder.setErrorHandler(new org.xml.sax.helpers.DefaultHandler() {
                 @Override
@@ -84,8 +82,7 @@ public class JQuickEvaluateProcessor {
             String result = parseNode(root, context);
             console.log(JLogLevel.INFO,"the result is \n" + result);
             return result;
-        } catch (Exception e) {
-            log.warn("Failed to parse dynamic tags, fallback to original content: {}", content, e);
+        } catch (Exception e) {//兼容里面含有<>标签的数据比如说java 泛型
             return content;
         }
     }

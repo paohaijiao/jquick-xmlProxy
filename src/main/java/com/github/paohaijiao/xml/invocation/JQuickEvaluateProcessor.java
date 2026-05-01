@@ -16,6 +16,8 @@
 package com.github.paohaijiao.xml.invocation;
 
 import com.github.paohaijiao.console.JConsole;
+import com.github.paohaijiao.console.JConsoleConfig;
+import com.github.paohaijiao.console.JConsoleConfigLoader;
 import com.github.paohaijiao.enums.JLogLevel;
 import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.value.ValueResolver;
@@ -39,7 +41,6 @@ import java.util.stream.LongStream;
 @Slf4j
 public class JQuickEvaluateProcessor {
 
-    private static JConsole console=new JConsole();
 
     private static final DocumentBuilderFactory factory;
 
@@ -67,6 +68,9 @@ public class JQuickEvaluateProcessor {
             return content;
         }
         try {
+            JConsoleConfig config = JConsoleConfigLoader.load();
+            JConsole.init(config);
+            JConsole console = JConsole.getInstance();
             console.log(JLogLevel.INFO,"the  content is \n" + content);
             String preprocessed = processAndEscapeAttributes(content,context);
             String wrappedContent = wrapAsXml(preprocessed);
@@ -88,7 +92,7 @@ public class JQuickEvaluateProcessor {
     }
     private static String processAndEscapeAttributes(String content, JContext context) {
         if (content == null) return null;
-      //  String rendered = ValueResolver.renderTemplate(content, context);
+        String rendered = ValueResolver.renderTemplate(content, context);
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("test\\s*=\\s*\"([^\"]*)\"");
         java.util.regex.Matcher matcher = pattern.matcher(content);
         StringBuffer sb = new StringBuffer();

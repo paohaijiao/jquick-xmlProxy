@@ -4,16 +4,16 @@
     <parent>
         <groupId>io.github.paohaijiao</groupId>
         <artifactId>javelin</artifactId>
-        <version>1.4.2</version>
+        <version>1.7.6</version>
     </parent>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <artifactId>jquick-xmlProxy</artifactId>
     <groupId>io.github.paohaijiao</groupId>
     <name>jquick-xmlProxy</name>
     <properties>
         <lombok.version>1.18.30</lombok.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <javelin.version>1.4.2</javelin.version>
+        <javelin.version>1.7.6</javelin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

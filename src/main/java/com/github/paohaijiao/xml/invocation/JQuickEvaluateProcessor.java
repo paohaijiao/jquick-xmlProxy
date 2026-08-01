@@ -71,7 +71,6 @@ public class JQuickEvaluateProcessor {
             JConsoleConfig config = JConsoleConfigLoader.load();
             JConsole.init(config);
             JConsole console = JConsole.getInstance();
-            console.log(JLogLevel.INFO,"the  content is \n" + content);
             String preprocessed = processAndEscapeAttributes(content,context);
             String wrappedContent = wrapAsXml(preprocessed);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -84,7 +83,6 @@ public class JQuickEvaluateProcessor {
             Document doc = builder.parse(new org.xml.sax.InputSource(new StringReader(wrappedContent)));
             Element root = doc.getDocumentElement();
             String result = parseNode(root, context);
-            console.log(JLogLevel.INFO,"the result is \n" + result);
             return result;
         } catch (Exception e) {//兼容里面含有<>标签的数据比如说java 泛型
             return content;

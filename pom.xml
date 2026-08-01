@@ -6,7 +6,7 @@
         <artifactId>javelin</artifactId>
         <version>1.7.6</version>
     </parent>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
     <artifactId>jquick-xmlProxy</artifactId>
     <groupId>io.github.paohaijiao</groupId>
     <name>jquick-xmlProxy</name>

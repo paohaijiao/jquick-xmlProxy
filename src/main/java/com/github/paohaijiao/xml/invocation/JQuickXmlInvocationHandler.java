@@ -16,6 +16,8 @@
 package com.github.paohaijiao.xml.invocation;
 
 import com.github.paohaijiao.console.JConsole;
+import com.github.paohaijiao.console.JConsoleConfig;
+import com.github.paohaijiao.console.JConsoleConfigLoader;
 import com.github.paohaijiao.enums.JLogLevel;
 import com.github.paohaijiao.exception.JAssert;
 import com.github.paohaijiao.param.JContext;
@@ -45,7 +47,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
 
-    protected static JConsole console=new JConsole();
 
     protected  JQuickXmlNamespace namespace;
 
@@ -102,6 +103,9 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
         String dynamicParsedContent = JQuickEvaluateProcessor.parse(content, jContext);
         String lexer = replaceVariables(dynamicParsedContent, jContext);
         Object rawResult = loadResult(lexer,context,method,args);
+        JConsoleConfig config = JConsoleConfigLoader.load();
+        JConsole.init(config);
+        JConsole console = JConsole.getInstance();
         console.log(JLogLevel.INFO,"result:"+ rawResult);
         return rawResult;
     }
@@ -128,7 +132,10 @@ public abstract class JQuickXmlInvocationHandler implements InvocationHandler {
                 String replacement = Matcher.quoteReplacement(value.toString());
                 matcher.appendReplacement(sb,replacement);
             } else {
-                log.info("Variable #{} not found in context, keeping placeholder", variableName);
+                JConsoleConfig config = JConsoleConfigLoader.load();
+                JConsole.init(config);
+                JConsole console = JConsole.getInstance();
+                console.info("Variable "+variableName+" not found in context, keeping placeholder" );
                 matcher.appendReplacement(sb, matcher.group(0)); // 保持原样
             }
         }

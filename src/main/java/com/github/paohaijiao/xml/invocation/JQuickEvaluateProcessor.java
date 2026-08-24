@@ -16,6 +16,8 @@
 package com.github.paohaijiao.xml.invocation;
 
 import com.github.paohaijiao.console.JConsole;
+import com.github.paohaijiao.console.JConsoleConfig;
+import com.github.paohaijiao.console.JConsoleConfigLoader;
 import com.github.paohaijiao.enums.JLogLevel;
 import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.value.ValueResolver;
@@ -39,7 +41,6 @@ import java.util.stream.LongStream;
 @Slf4j
 public class JQuickEvaluateProcessor {
 
-    private static JConsole console=new JConsole();
 
     private static final DocumentBuilderFactory factory;
 
@@ -67,7 +68,9 @@ public class JQuickEvaluateProcessor {
             return content;
         }
         try {
-            console.log(JLogLevel.INFO,"the  content is \n" + content);
+            JConsoleConfig config = JConsoleConfigLoader.load();
+            JConsole.init(config);
+            JConsole console = JConsole.getInstance();
             String preprocessed = processAndEscapeAttributes(content,context);
             String wrappedContent = wrapAsXml(preprocessed);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -80,7 +83,6 @@ public class JQuickEvaluateProcessor {
             Document doc = builder.parse(new org.xml.sax.InputSource(new StringReader(wrappedContent)));
             Element root = doc.getDocumentElement();
             String result = parseNode(root, context);
-            console.log(JLogLevel.INFO,"the result is \n" + result);
             return result;
         } catch (Exception e) {//兼容里面含有<>标签的数据比如说java 泛型
             return content;
@@ -88,7 +90,7 @@ public class JQuickEvaluateProcessor {
     }
     private static String processAndEscapeAttributes(String content, JContext context) {
         if (content == null) return null;
-      //  String rendered = ValueResolver.renderTemplate(content, context);
+        String rendered = ValueResolver.renderTemplate(content, context);
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("test\\s*=\\s*\"([^\"]*)\"");
         java.util.regex.Matcher matcher = pattern.matcher(content);
         StringBuffer sb = new StringBuffer();

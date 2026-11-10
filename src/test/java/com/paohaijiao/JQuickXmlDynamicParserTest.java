@@ -644,6 +644,22 @@ public class JQuickXmlDynamicParserTest {
     }
 
     @Test
+    public void testSqlWithEscapedLessThan() {
+        JContext context = new JContext();
+        context.put("level", 1);
+        context.put("startDate", "2025-01-01");
+        context.put("endDate", "2025-12-31");
+        String content = "select *  from data_catalog_stat where 1=1\n" +
+                "<if test=\"null!=level\">and level =#{level}</if>\n" +
+                "<if test=\"null!=startDate\">and  create_date&gt;#{startDate}</if>\n" +
+                "<if test=\"null!=endDate\">and  create_date &lt;#{endDate}</if>";
+        String result = JQuickEvaluateProcessor.parse(content, context);
+        assertTrue(result.contains("and level =1"));
+        assertTrue(result.contains("and  create_date>2025-01-01"));
+        assertTrue(result.contains("and  create_date <2025-12-31"));
+    }
+
+    @Test
     public void testSpecialCharactersInVariables() {
         JContext context = new JContext();
         context.put("message", "Hello \"World\"");

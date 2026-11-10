@@ -85,6 +85,7 @@ public class JQuickEvaluateProcessor {
             String result = parseNode(root, context);
             return result;
         } catch (Exception e) {//兼容里面含有<>标签的数据比如说java 泛型
+            log.info("back to ::"+content);
             return content;
         }
     }

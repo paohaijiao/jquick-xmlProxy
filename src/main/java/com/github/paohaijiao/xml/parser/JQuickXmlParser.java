@@ -66,7 +66,7 @@ public class JQuickXmlParser implements JQuickParser{
                 namespaceMap.put(curlNamespace.getNamespace(), curlNamespace);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse curl XML: " + xmlPath, e);
+            throw new RuntimeException("Failed to parse  XML: " + xmlPath, e);
         }
         return namespaceMap;
     }
@@ -122,9 +122,9 @@ public class JQuickXmlParser implements JQuickParser{
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeType() == Node.TEXT_NODE) {
-                content.append(child.getTextContent());
-            } else if (child.getNodeType() == Node.CDATA_SECTION_NODE) {  //
-                content.append(child.getTextContent());  // CDATA 内容直接添加
+                content.append(escapeText(child.getTextContent()));
+            } else if (child.getNodeType() == Node.CDATA_SECTION_NODE) {
+                content.append(escapeText(child.getTextContent()));
             } else if (child.getNodeType() == Node.ELEMENT_NODE) {
                 content.append(serializeElement((Element) child));
             }
@@ -138,14 +138,16 @@ public class JQuickXmlParser implements JQuickParser{
         for (int i = 0; i < attrs.getLength(); i++) {
             Node attr = attrs.item(i);
             sb.append(" ").append(attr.getNodeName()).append("=\"")
-                    .append(attr.getNodeValue()).append("\"");
+                    .append(escapeAttr(attr.getNodeValue())).append("\"");
         }
         sb.append(">");
         NodeList children = element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             Node child = children.item(i);
             if (child.getNodeType() == Node.TEXT_NODE) {
-                sb.append(child.getTextContent());
+                sb.append(escapeText(child.getTextContent()));
+            } else if (child.getNodeType() == Node.CDATA_SECTION_NODE) {
+                sb.append(escapeText(child.getTextContent()));
             } else if (child.getNodeType() == Node.ELEMENT_NODE) {
                 sb.append(serializeElement((Element) child));
             }
@@ -153,5 +155,37 @@ public class JQuickXmlParser implements JQuickParser{
 
         sb.append("</").append(element.getTagName()).append(">");
         return sb.toString();
+    }
+
+    /**
+     * 转义文本节点内容，保证序列化后的字符串仍是合法 XML
+     * DOM 解析会把 &lt; 等实体解码成 <，序列化时必须重新转义，
+     * 否则二次解析会抛 SAXParseException
+     * Escape text node content. Example: escapeText("a<b & c") returns "a&lt;b &amp; c"
+     *
+     * @param text DOM 文本节点的原始值（已解码）
+     * @return 转义后的合法 XML 字符数据
+     */
+    private static String escapeText(String text) {
+        if (text == null || text.isEmpty()) {
+            return text;
+        }
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+    }
+
+    /**
+     * 转义属性值，在文本转义基础上额外处理双引号
+     * Escape attribute value. Example: escapeAttr("a\"b<c") returns "a&quot;b&lt;c"
+     *
+     * @param value DOM 属性的原始值（已解码）
+     * @return 可安全放入双引号属性中的转义值
+     */
+    private static String escapeAttr(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        return escapeText(value).replace("\"", "&quot;");
     }
 }
